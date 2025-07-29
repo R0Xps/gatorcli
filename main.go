@@ -48,6 +48,7 @@ func main() {
 	cmds.register("addfeed", handlerAddFeed)
 	cmds.register("feeds", handlerFeeds)
 	cmds.register("follow", handlerFollow)
+	cmds.register("following", handlerFollowing)
 
 	args := os.Args
 
@@ -302,5 +303,17 @@ func handlerFollow(s *state, cmd command) error {
 	}
 
 	fmt.Println(ff.FeedName, ff.UserName)
+	return nil
+}
+
+func handlerFollowing(s *state, cmd command) error {
+	feedFollows, err := s.db.GetFeedFollowsForUser(context.Background(), s.config.Current_user_name)
+	if err != nil {
+		return nil
+	}
+
+	for _, feedFollow := range feedFollows {
+		fmt.Println(feedFollow.FeedName)
+	}
 	return nil
 }
