@@ -87,11 +87,18 @@ func handlerLogin(s *state, cmd command) error {
 	if len(cmd.args) == 0 {
 		return fmt.Errorf("command 'login' expects 1 argument (username)")
 	}
-	err := s.config.SetUser(cmd.args[0])
+
+	_, err := s.db.GetUser(context.Background(), cmd.args[0])
+
+	if err != nil {
+		log.Fatal("User doesn't exist")
+	}
+
+	err = s.config.SetUser(cmd.args[0])
 	if err != nil {
 		return err
 	}
-	fmt.Println("User has been set")
+	fmt.Println("Login successful")
 	return nil
 }
 
