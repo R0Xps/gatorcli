@@ -1,4 +1,4 @@
-package gatorcli
+package main
 
 func main() {
 
