@@ -1,11 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/R0Xps/gatorcli/internal/config"
+	"github.com/R0Xps/gatorcli/internal/database"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -13,7 +16,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	db, err := sql.Open("postgres", conf.Db_url)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dbQueries := database.New(db)
+
 	st := state{
+		db:     dbQueries,
 		config: &conf,
 	}
 	cmds := commands{
@@ -37,9 +50,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 }
 
 type state struct {
+	db     *database.Queries
 	config *config.Config
 }
 
