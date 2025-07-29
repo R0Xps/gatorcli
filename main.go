@@ -20,6 +20,8 @@ func main() {
 		commands: map[string]func(*state, command) error{},
 	}
 
+	cmds.register("login", handlerLogin)
+
 	args := os.Args
 
 	if len(args) < 2 {
@@ -60,4 +62,16 @@ func (c *commands) run(s *state, cmd command) error {
 
 func (c *commands) register(name string, f func(*state, command) error) {
 	c.commands[name] = f
+}
+
+func handlerLogin(s *state, cmd command) error {
+	if len(cmd.args) == 0 {
+		return fmt.Errorf("command 'login' expects 1 argument (username)")
+	}
+	err := s.config.SetUser(cmd.args[0])
+	if err != nil {
+		return err
+	}
+	fmt.Println("User has been set")
+	return nil
 }
