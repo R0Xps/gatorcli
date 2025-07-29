@@ -29,6 +29,11 @@ func Read() (Config, error) {
 	return config, nil
 }
 
+func (c Config) SetUser(new_user_name string) error {
+	c.Current_user_name = new_user_name
+	return write(c)
+}
+
 func getConfigFilePath() (string, error) {
 	homeDirPath, err := os.UserHomeDir()
 	if err != nil {
@@ -36,4 +41,17 @@ func getConfigFilePath() (string, error) {
 	}
 	configFilePath := homeDirPath + "/" + configFileName
 	return configFilePath, nil
+}
+
+func write(config Config) error {
+	jsonBytes, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+	configFilePath, err := getConfigFilePath()
+	if err != nil {
+		return err
+	}
+	os.WriteFile(configFilePath, jsonBytes, os.ModePerm)
+	return nil
 }
