@@ -10,10 +10,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/R0Xps/gatorcli/internal/config"
 	"github.com/R0Xps/gatorcli/internal/database"
+	"github.com/araddon/dateparse"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 )
@@ -359,8 +361,23 @@ func scrapeFeeds(s *state) {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%s:\n", rssFeed.Channel.Title)
-	for _, item := range rssFeed.Channel.Item {
-		fmt.Println(" -", item.Title)
+	for _, post := range rssFeed.Channel.Item {
+		pubDate, err := dateparse.ParseAny(post.PubDate)
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, err = s.db.CreatePost(context.Background(), database.CreatePostParams{
+			ID:          uuid.New(),
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			Title:       post.Title,
+			Url:         post.Link,
+			Description: post.Description,
+			PublishedAt: pubDate,
+			FeedID:      feed.ID,
+		})
+		if err != nil && !strings.Contains(strings.ToLower(err.Error()), "unique") {
+			log.Fatal(err)
+		}
 	}
 }
