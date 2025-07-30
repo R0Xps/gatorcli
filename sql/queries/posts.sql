@@ -20,3 +20,8 @@ ON posts.feed_id = feed_follows.feed_id
 WHERE feed_follows.user_id = $1
 ORDER BY published_at DESC
 LIMIT $2;
+
+-- name: GetPosts :many
+SELECT *
+FROM posts
+LIMIT $1;

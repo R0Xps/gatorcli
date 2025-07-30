@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -52,6 +53,7 @@ func main() {
 	cmds.register("follow", middlewareLoggedIn(handlerFollow))
 	cmds.register("following", middlewareLoggedIn(handlerFollowing))
 	cmds.register("unfollow", middlewareLoggedIn(handlerUnfollow))
+	cmds.register("browse", handlerBrowse)
 
 	args := os.Args
 
@@ -331,6 +333,31 @@ func handlerUnfollow(s *state, cmd command, user database.User) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func handlerBrowse(s *state, cmd command) error {
+	limit := 2
+	var err error
+	if len(cmd.args) > 0 {
+		limit, err = strconv.Atoi(cmd.args[0])
+		if err != nil {
+			return err
+		}
+	}
+
+	posts, err := s.db.GetPosts(context.Background(), int32(limit))
+	if err != nil {
+		return nil
+	}
+
+	for _, post := range posts {
+		fmt.Println("Title:", post.Title)
+		fmt.Println("Published at:", post.PublishedAt)
+		fmt.Println("URL:", post.Url)
+		fmt.Println()
+	}
+
 	return nil
 }
 
