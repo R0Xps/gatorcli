@@ -271,7 +271,7 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 func handlerFeeds(s *state, cmd command) error {
 	feeds, err := s.db.GetFeeds(context.Background())
 	if err != nil {
-		return nil
+		return err
 	}
 
 	for _, feed := range feeds {
@@ -312,7 +312,7 @@ func handlerFollow(s *state, cmd command, user database.User) error {
 func handlerFollowing(s *state, cmd command, user database.User) error {
 	feedFollows, err := s.db.GetFeedFollowsForUser(context.Background(), user.Name)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	for _, feedFollow := range feedFollows {
@@ -348,7 +348,7 @@ func handlerBrowse(s *state, cmd command) error {
 
 	posts, err := s.db.GetPosts(context.Background(), int32(limit))
 	if err != nil {
-		return nil
+		return err
 	}
 
 	for _, post := range posts {
