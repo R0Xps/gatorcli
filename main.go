@@ -1,5 +1,0 @@
-package gatorcli
-
-func main() {
-
-}
